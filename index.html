@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="An animation of the motion of a torque-free top and the Poinsot construction.">
+    <meta name="keywords" content="Poinsot">
+    <meta name="author" content="Andrew Goetz">
+    <title>Poinsot Construction</title>
+    <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+    <div id="info">
+        <p>This animation simulates the motion of a torque-free top (shown in white), including "Poinsot's construction"
+            with the invariable plane (yellow), momental ellipsoid (gray), polhode (magenta), and herpolhode (white). In
+            this visualization the top is an ellipsoid, but any top with the same moments of inertia would have the same
+            behavior. You can stop and reset the animation, at which point you can change the top's mass, shape, initial
+            attitude, and initial angular momentum before starting the animation anew.</p>
+        <p>The simulation is updated by numerically integrating the equations of motion using Euler's method. It's well
+            known that Euler's method accumulates errors rather quickly, so if you watch long enough you will notice
+            some wandering.</p>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+
+</html>

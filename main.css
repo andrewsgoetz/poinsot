@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+}
+
+.lil-gui {
+    --font-size: 14;
+    --font-family: 'serif';
+    --name-width: 20%;
+}
+
+#info {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: 800px;
+    text-align: left;
+    z-index: 100;
+    color: white;
+}
