@@ -41,10 +41,10 @@ const rigidBodyObject = new THREE.LineSegments(rigidBodyWireframe);
 rigidBodyObject.material.color.set(0xffffff);
 rigidBodyObject.scale.set(initialA, initialB, initialC);
 
-const momentalEllipsoidGeometry = new THREE.SphereGeometry(1.);
-const momentalEllipsoidWireframe = new THREE.WireframeGeometry(momentalEllipsoidGeometry);
-const momentalEllipsoidMaterial = new THREE.LineBasicMaterial({ color: 0x666666 });
-const momentalEllipsoidObject = new THREE.LineSegments(momentalEllipsoidWireframe, momentalEllipsoidMaterial);
+const energyEllipsoidGeometry = new THREE.SphereGeometry(1.);
+const energyEllipsoidWireframe = new THREE.WireframeGeometry(energyEllipsoidGeometry);
+const energyEllipsoidMaterial = new THREE.LineBasicMaterial({ color: 0x666666 });
+const energyEllipsoidObject = new THREE.LineSegments(energyEllipsoidWireframe, energyEllipsoidMaterial);
 
 const invariablePlane = new THREE.Plane(new THREE.Vector3(0., 0., 1.), 1.);
 const invariablePlaneHelper = new THREE.PlaneHelper(invariablePlane, 10., 0xffff00);
@@ -64,7 +64,7 @@ scene.add(
     angularMomentumArrow,
     omegaArrow,
     rigidBodyObject,
-    momentalEllipsoidObject,
+    energyEllipsoidObject,
     invariablePlaneHelper,
     polhodeObject,
     herpolhodeObject,
@@ -110,7 +110,7 @@ function animate(timeStamp) {
             angularVelocity.omega3 = omega.z;
 
             rigidBodyObject.setRotationFromQuaternion(quaternion.q);
-            momentalEllipsoidObject.setRotationFromQuaternion(quaternion.q);
+            energyEllipsoidObject.setRotationFromQuaternion(quaternion.q);
             updateAngularVelocityVector();
 
             polhodeGeometry.setFromPoints(polhodePoints);
@@ -172,7 +172,7 @@ const constantsOfMotion = {
 const graphicsProperties = {
     showObject: true,
     showAxes: true,
-    showMomentalEllipsoid: true,
+    showEnergyEllipsoid: true,
     showAngularMomentumVector: true,
     showAngularVelocityVector: true,
     showInvariablePlane: true,
@@ -206,7 +206,7 @@ const kineticEnergyController = constantsOfMotionFolder.add(constantsOfMotion, '
 const toggleGraphicsOptionsFolder = gui.addFolder('Show');
 toggleGraphicsOptionsFolder.add(graphicsProperties, 'showObject').name('Object').onChange(v => { rigidBodyObject.visible = v; });
 toggleGraphicsOptionsFolder.add(graphicsProperties, 'showAxes').name('Axes').onChange(v => { axesHelper.visible = v; });
-toggleGraphicsOptionsFolder.add(graphicsProperties, 'showMomentalEllipsoid').name('Momental Ellipsoid').onChange(v => { momentalEllipsoidObject.visible = v; });
+toggleGraphicsOptionsFolder.add(graphicsProperties, 'showEnergyEllipsoid').name('Energy Ellipsoid').onChange(v => { energyEllipsoidObject.visible = v; });
 toggleGraphicsOptionsFolder.add(graphicsProperties, 'showAngularMomentumVector').name('Angular Momentum').onChange(v => { angularMomentumArrow.visible = v; });
 toggleGraphicsOptionsFolder.add(graphicsProperties, 'showAngularVelocityVector').name('Angular Velocity').onChange(v => { omegaArrow.visible = v; });
 toggleGraphicsOptionsFolder.add(graphicsProperties, 'showInvariablePlane').name('Invariable Plane').onChange(v => { invariablePlaneHelper.visible = v; });
@@ -344,7 +344,7 @@ function userUpdatedQuaternion() {
     quaternion.q = new THREE.Quaternion(q1, q2, q3, q0);
 
     rigidBodyObject.setRotationFromQuaternion(quaternion.q);
-    momentalEllipsoidObject.setRotationFromQuaternion(quaternion.q);
+    energyEllipsoidObject.setRotationFromQuaternion(quaternion.q);
     userUpdatedAngularVelocity();
 }
 
@@ -385,7 +385,7 @@ function userUpdatedKineticEnergy() { // This only happens indirectly.
     const T = 0.5 * (I1 * omega1b * omega1b + I2 * omega2b * omega2b + I3 * omega3b * omega3b);
     kineticEnergyController.setValue(T);
     userUpdatedInvariablePlane();
-    userUpdatedMomentalEllipsoid();
+    userUpdatedEnergyEllipsoid();
 }
 
 function userUpdatedInvariablePlane() { // This only happens indirectly.
@@ -395,7 +395,7 @@ function userUpdatedInvariablePlane() { // This only happens indirectly.
     invariablePlane.constant = h;
 }
 
-function userUpdatedMomentalEllipsoid() { // This only happens indirectly.
+function userUpdatedEnergyEllipsoid() { // This only happens indirectly.
     const I1 = ellipsoidProperties.I1;
     const I2 = ellipsoidProperties.I2;
     const I3 = ellipsoidProperties.I3;
@@ -403,7 +403,7 @@ function userUpdatedMomentalEllipsoid() { // This only happens indirectly.
     const a = Math.sqrt(2. * T / I1);
     const b = Math.sqrt(2. * T / I2);
     const c = Math.sqrt(2. * T / I3);
-    momentalEllipsoidObject.scale.set(a, b, c);
+    energyEllipsoidObject.scale.set(a, b, c);
 }
 
 function updateQuaternion() {
