@@ -123,10 +123,11 @@ function animate(timeStamp) {
 }
 window.requestAnimationFrame(animate);
 
-const animation = {
-    toggle: toggleAnimation,
-    reset: resetAnimation,
-    info: showOrHideInfo,
+const parameterPresets = {
+    defaultParameters: setDefaultParameters,
+    axisymmetricOblate: setAxisymmetricOblateParameters,
+    axisymmetricProlate: setAxissymmetricProlateParameters,
+    tumblingParameters: setTumblingParameters,
 }
 
 const ellipsoidProperties = {
@@ -180,7 +181,19 @@ const graphicsProperties = {
     showHerpolhode: true,
 }
 
+const animation = {
+    toggle: toggleAnimation,
+    reset: init,
+    info: showOrHideInfo,
+}
+
 const gui = new GUI();
+
+const presetsFolder = gui.addFolder('Parameter Presets')
+const defaultParametersController = presetsFolder.add(parameterPresets, 'defaultParameters').name('Default');
+const axisymmetricOblateParametersController = presetsFolder.add(parameterPresets, 'axisymmetricOblate').name('Axisymmetric Oblate');
+const axisymmetricProlateParametersController = presetsFolder.add(parameterPresets, 'axisymmetricProlate').name('Axisymmetric Prolate');
+const tumblingParametersController = presetsFolder.add(parameterPresets, 'tumblingParameters').name('Tumbling');
 
 const ellipsoidFolder = gui.addFolder('Ellipsoid Rigid Body');
 const massController = ellipsoidFolder.add(ellipsoidProperties, 'M', 0, 500).name('M').onChange(() => userUpdatedEllipsoid());
@@ -227,6 +240,10 @@ const userInputs = [
     q2Controller,
     q3Controller,
     angularMomentumController,
+    defaultParametersController,
+    axisymmetricOblateParametersController,
+    axisymmetricProlateParametersController,
+    tumblingParametersController,
 ];
 
 init();
@@ -236,10 +253,8 @@ toggleAnimation();
 
 // Initialize.
 function init() {
-    userUpdatedEllipsoid();
-    userUpdatedQuaternion();
-    userUpdatedAngularVelocity();
-    userUpdatedAngularMomentum();
+    inputsFrozen = false;
+    setDefaultParameters();
     polhodePoints = [];
     herpolhodePoints = [];
     polhodeGeometry.setFromPoints(polhodePoints);
@@ -255,6 +270,74 @@ function init() {
     for (const child of toggleGraphicsOptionsFolder.children) {
         child.setValue(true); // make all objects visible
     }
+}
+
+function updateControlsAfterPresetsSelected() {
+    massController.updateDisplay();
+    aController.updateDisplay();
+    bController.updateDisplay();
+    cController.updateDisplay();
+    q0Controller.updateDisplay();
+    q1Controller.updateDisplay();
+    q2Controller.updateDisplay();
+    q3Controller.updateDisplay();
+    angularMomentumController.updateDisplay();
+    userUpdatedEllipsoid();
+    userUpdatedQuaternion();
+    userUpdatedAngularVelocity();
+    userUpdatedAngularMomentum();
+}
+
+function setDefaultParameters() {
+    ellipsoidProperties.M = initialMass;
+    ellipsoidProperties.a = initialA;
+    ellipsoidProperties.b = initialB;
+    ellipsoidProperties.c = initialC;
+    quaternion.q0unnormalized = initialQ0unnormalized;
+    quaternion.q1unnormalized = initialQ1unnormalized;
+    quaternion.q2unnormalized = initialQ2unnormalized;
+    quaternion.q3unnormalized = initialQ3unnormalized;
+    constantsOfMotion.angularMomentum = initialAngularMomentum;
+    updateControlsAfterPresetsSelected();
+}
+
+function setAxisymmetricOblateParameters() {
+    ellipsoidProperties.M = 20.0;
+    ellipsoidProperties.a = 0.5;
+    ellipsoidProperties.b = 0.3;
+    ellipsoidProperties.c = 0.5;
+    quaternion.q0unnormalized = 1;
+    quaternion.q1unnormalized = -1;
+    quaternion.q2unnormalized = 0.85;
+    quaternion.q3unnormalized = -1;
+    constantsOfMotion.angularMomentum = 3;
+    updateControlsAfterPresetsSelected();
+}
+
+function setAxissymmetricProlateParameters() {
+    ellipsoidProperties.M = 50.0;
+    ellipsoidProperties.a = 0.3;
+    ellipsoidProperties.b = 0.5;
+    ellipsoidProperties.c = 0.3;
+    quaternion.q0unnormalized = 1;
+    quaternion.q1unnormalized = -1;
+    quaternion.q2unnormalized = 0.84;
+    quaternion.q3unnormalized = -0.7;
+    constantsOfMotion.angularMomentum = 5;
+    updateControlsAfterPresetsSelected();
+}
+
+function setTumblingParameters() {
+    ellipsoidProperties.M = 30.0;
+    ellipsoidProperties.a = 0.2;
+    ellipsoidProperties.b = 0.3;
+    ellipsoidProperties.c = 0.4;
+    quaternion.q0unnormalized = 1;
+    quaternion.q1unnormalized = -0.95;
+    quaternion.q2unnormalized = 1;
+    quaternion.q3unnormalized = -1;
+    constantsOfMotion.angularMomentum = 6;
+    updateControlsAfterPresetsSelected();
 }
 
 function toggleAnimation() {
@@ -274,20 +357,6 @@ function toggleAnimation() {
         toggleAnimationButton.name('Stop Animation');
         resetAnimationButton.disable();
     }
-}
-
-function resetAnimation() {
-    ellipsoidProperties.M = initialMass;
-    ellipsoidProperties.a = initialA;
-    ellipsoidProperties.b = initialB;
-    ellipsoidProperties.c = initialC;
-    quaternion.q0unnormalized = initialQ0unnormalized;
-    quaternion.q1unnormalized = initialQ1unnormalized;
-    quaternion.q2unnormalized = initialQ2unnormalized;
-    quaternion.q3unnormalized = initialQ3unnormalized;
-    constantsOfMotion.angularMomentum = initialAngularMomentum;
-    inputsFrozen = false;
-    init();
 }
 
 function showOrHideInfo() {
